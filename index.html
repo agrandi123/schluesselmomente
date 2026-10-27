@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moiras Schlüsselmomente</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --gap:14px; --radius:14px; --max-width:1200px; }
+    * { box-sizing:border-box; }
+    html,body { min-height:100%; margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; }
+    body { background:#111 url("Bilder/hintergrund.jpg") center/cover no-repeat fixed; color:#fff; }
+    header { text-align:center; padding:26px 16px 22px; background:rgba(0,0,0,.52); border-bottom:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px); }
+    h1 { margin:0; font-family:"Cinzel",Georgia,serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; letter-spacing:.08em; text-shadow:0 0 8px #fff,0 0 22px rgba(255,255,255,.35); }
+    .subtitle { margin:12px 0 0; font-size:clamp(1rem,2vw,1.25rem); color:#eee; letter-spacing:.03em; }
+    main { max-width:var(--max-width); margin:0 auto; padding:18px 16px 28px; }
+    .gallery { padding:14px; border-radius:18px; background:rgba(0,0,0,.78); border:1px solid rgba(255,255,255,.18); box-shadow:0 10px 40px rgba(0,0,0,.45); }
+    .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--gap); }
+    .card { overflow:hidden; border-radius:var(--radius); border:1px solid rgba(255,255,255,.18); background:rgba(0,0,0,.35); box-shadow:0 8px 22px rgba(0,0,0,.35); transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
+    .card:hover, .card:focus-within { transform:translateY(-4px); border-color:rgba(255,218,105,.95); box-shadow:0 0 10px rgba(255,204,64,.75),0 0 26px rgba(255,190,40,.55),0 12px 30px rgba(0,0,0,.55); }
+    .card:hover img, .card:focus-within img { filter:drop-shadow(0 0 8px rgba(255,211,77,.85)) brightness(1.06); }
+    .card button { all:unset; cursor:pointer; display:block; width:100%; }
+    .card img { display:block; width:100%; aspect-ratio:2/3; object-fit:cover; background:rgba(255,255,255,.06); }
+    .card-label { padding:9px 6px 11px; text-align:center; font-family:"Cinzel",Georgia,serif; letter-spacing:.06em; }
+    .overlay { position:fixed; inset:0; z-index:10; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.88); }
+    .overlay[aria-hidden="false"] { display:flex; }
+    .modal { width:min(1000px,100%); max-height:94vh; display:grid; grid-template-rows:auto 1fr; overflow:hidden; border:1px solid rgba(255,255,255,.2); border-radius:16px; background:#111; box-shadow:0 20px 70px rgba(0,0,0,.65); }
+    .modal-header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; background:rgba(0,0,0,.8); border-bottom:1px solid rgba(255,255,255,.15); font-family:"Cinzel",Georgia,serif; }
+    .close { cursor:pointer; padding:9px 14px; border:1px solid rgba(255,255,255,.25); border-radius:9px; background:rgba(255,255,255,.08); color:#fff; font-weight:700; }
+    .video-wrap { width:100%; aspect-ratio:16/9; background:#000; }
+    .video-wrap iframe { width:100%; height:100%; border:0; display:block; }
+    .video-message { padding:30px 20px; text-align:center; color:#eee; }
+    @media(max-width:850px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } header { padding-top:76px; } }
+    .startseite { position:absolute; top:16px; left:16px; padding:11px 16px; border:1px solid rgba(255,220,130,.65); border-radius:10px; background:rgba(0,0,0,.55); color:#fff; text-decoration:none; font-family:"Cinzel",Georgia,serif; font-weight:700; letter-spacing:.06em; box-shadow:0 0 12px rgba(255,195,50,.18); transition:background .2s ease,box-shadow .2s ease; }
+    .startseite:hover { background:rgba(70,48,0,.7); box-shadow:0 0 16px rgba(255,204,64,.55); }
+    @media(max-width:850px) { header { padding-top:76px; } .startseite { top:12px; left:12px; } }
+    @media(max-width:600px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } main { padding:12px 10px 20px; } .gallery { padding:9px; } .startseite { padding:8px 11px; font-size:.85rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="startseite" href="https://agrandi123.github.io/Moira_start/">Startseite</a>
+    <h1>Moiras Schlüsselmomente</h1>
+    <p class="subtitle">Wähle eine Karte und erfahre ihre Geschichte</p>
+  </header>
+
+  <main>
+    <section class="gallery" aria-label="Die 16 Karten">
+      <div class="grid" id="grid"></div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <strong id="modalTitle">Karte</strong>
+        <button class="close" id="closeBtn" type="button">Schließen ✕</button>
+      </div>
+      <div id="modalBody">
+        <div class="video-wrap"><iframe id="videoFrame" title="YouTube-Video" referrerpolicy="no-referrer-when-downgrade" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="eager"></iframe></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const CARD_COUNT = 16;
+    const grid = document.getElementById('grid');
+    const overlay = document.getElementById('overlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const videoFrame = document.getElementById('videoFrame');
+    const modalBody = document.getElementById('modalBody');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // Hier die YouTube-Links für die jeweiligen Karten eintragen.
+    // Beispiel: 1: 'https://www.youtube.com/watch?v=VIDEO_ID'
+    const DEFAULT_YOUTUBE_LINK = 'https://www.youtube.com/watch?v=o61Tl5aI9eM&t=2745s';
+    const youtubeLinks = Object.fromEntries(
+      Array.from({ length: CARD_COUNT }, (_, index) => [index + 1, DEFAULT_YOUTUBE_LINK])
+    );
+
+    function youtubeEmbedUrl(link) {
+      try {
+        const url = new URL(link);
+        let id = '';
+        if (url.hostname.includes('youtu.be')) id = url.pathname.split('/').filter(Boolean)[0] || '';
+        else if (url.hostname.includes('youtube.com')) {
+          if (url.pathname === '/watch') id = url.searchParams.get('v') || '';
+          else if (url.pathname.startsWith('/embed/')) id = url.pathname.split('/')[2] || '';
+          else if (url.pathname.startsWith('/shorts/')) id = url.pathname.split('/')[2] || '';
+        }
+        const start = url.searchParams.get('t') || url.searchParams.get('start') || '';
+        const seconds = /^\d+$/.test(start) ? Number(start) : (start.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/) || []).slice(1).reduce((total, part, index) => total + (Number(part || 0) * [3600, 60, 1][index]), 0);
+        const origin = /^https?:$/.test(window.location.protocol) ? `&origin=${encodeURIComponent(window.location.origin)}` : '';
+        return id ? `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&playsinline=1&rel=0${seconds ? `&start=${seconds}` : ''}${origin}` : '';
+      } catch { return ''; }
+    }
+
+    function openCard(i) {
+      modalTitle.textContent = `Karte ${i}`;
+      const embedUrl = youtubeEmbedUrl(youtubeLinks[i] || '');
+      if (embedUrl) {
+        modalBody.innerHTML = '<div class="video-wrap"><iframe id="videoFrame" title="YouTube-Video" referrerpolicy="no-referrer-when-downgrade" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="eager"></iframe></div><p class="video-message">Falls das Video nicht eingebettet startet, <a id="watchOnYoutube" target="_blank" rel="noopener" style="color:#ffdc82">hier direkt auf YouTube ansehen</a>.</p>';
+        modalBody.querySelector('iframe').src = embedUrl;
+        const watchLink = document.getElementById('watchOnYoutube');
+        watchLink.href = youtubeLinks[i];
+      } else {
+        modalBody.innerHTML = `<div class="video-message">Für <strong>Karte ${i}</strong> ist noch kein YouTube-Link hinterlegt.<br>Trage den Link im Bereich <code>youtubeLinks</code> im HTML ein.</div>`;
+      }
+      overlay.setAttribute('aria-hidden', 'false');
+      closeBtn.focus();
+    }
+    function closeModal() {
+      overlay.setAttribute('aria-hidden', 'true');
+      const frame = modalBody.querySelector('iframe');
+      if (frame) frame.src = '';
+    }
+
+    for (let i = 1; i <= CARD_COUNT; i++) {
+      const card = document.createElement('article');
+      card.className = 'card';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('aria-label', `Karte ${i} öffnen`);
+      button.addEventListener('click', () => openCard(i));
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.alt = `Karte ${i}`;
+      img.src = `Bilder/Karte${i}.png`;
+      img.onerror = function () {
+        if (this.dataset.fallback !== 'used') {
+          this.dataset.fallback = 'used';
+          this.src = `Bilder/karte${i}.png`;
+        } else {
+          this.alt = `Bilddatei Karte${i}.png nicht gefunden`;
+          this.style.objectFit = 'contain';
+        }
+      };
+      button.appendChild(img);
+      const label = document.createElement('div');
+      label.className = 'card-label';
+      label.textContent = `Karte ${i}`;
+      button.appendChild(label);
+      card.appendChild(button);
+      grid.appendChild(card);
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+
+  </script>
+</body>
+</html>
