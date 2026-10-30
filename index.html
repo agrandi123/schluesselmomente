@@ -4,23 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Moiras Schlüsselmomente</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root { --gap:14px; --radius:14px; --max-width:1200px; }
     * { box-sizing:border-box; }
-    html,body { min-height:100%; margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; }
+    html,body { min-height:100%; margin:0; font-family:"Cinzel",Georgia,serif; }
     body { background:#111 url("Bilder/hintergrund.jpg") center/cover no-repeat fixed; color:#fff; }
     header { text-align:center; padding:26px 16px 22px; background:rgba(0,0,0,.52); border-bottom:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px); }
-    h1 { margin:0; font-family:"Cinzel",Georgia,serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:700; letter-spacing:.08em; text-shadow:0 0 8px #fff,0 0 22px rgba(255,255,255,.35); }
-    .subtitle { margin:12px 0 0; font-size:clamp(1rem,2vw,1.25rem); color:#eee; letter-spacing:.03em; }
+    h1 { margin:0; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; letter-spacing:.035em; color:#ffe11b; text-shadow:0 0 5px #ffe31c,0 0 15px rgba(255,200,0,.95),0 0 30px rgba(255,155,0,.65); }
     main { max-width:var(--max-width); margin:0 auto; padding:18px 16px 28px; }
-    .gallery { padding:14px; border-radius:18px; background:rgba(0,0,0,.78); border:1px solid rgba(255,255,255,.18); box-shadow:0 10px 40px rgba(0,0,0,.45); }
+    .gallery { position:relative; isolation:isolate; padding:14px; border-radius:18px; background:rgba(0,0,0,.78); border:1px solid rgba(255,255,255,.18); box-shadow:0 10px 40px rgba(0,0,0,.45); }
     .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--gap); }
     .card { overflow:hidden; border-radius:var(--radius); border:1px solid rgba(255,255,255,.18); background:rgba(0,0,0,.35); box-shadow:0 8px 22px rgba(0,0,0,.35); transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
     .card:hover, .card:focus-within { transform:translateY(-4px); border-color:rgba(255,218,105,.95); box-shadow:0 0 10px rgba(255,204,64,.75),0 0 26px rgba(255,190,40,.55),0 12px 30px rgba(0,0,0,.55); }
     .card:hover img, .card:focus-within img { filter:drop-shadow(0 0 8px rgba(255,211,77,.85)) brightness(1.06); }
     .card button { all:unset; cursor:pointer; display:block; width:100%; }
     .card img { display:block; width:100%; aspect-ratio:2/3; object-fit:cover; background:rgba(255,255,255,.06); }
+
+    /* Geheimnisvoller Schleier über dem gesamten Kartenfeld */
+    .card-veil { position:absolute; z-index:3; inset:0; width:100%; height:100%; border:0; border-radius:18px; display:flex; align-items:flex-start; justify-content:center; cursor:pointer; padding:clamp(20px,3vw,38px) 20px; overflow:hidden; color:#ffe41e; background:radial-gradient(ellipse at 48% 42%,rgba(83,77,83,.76),rgba(24,22,30,.91) 65%,rgba(6,5,10,.97)),repeating-linear-gradient(125deg,rgba(255,255,255,.08) 0 2px,transparent 3px 70px); backdrop-filter:blur(24px) saturate(.55); -webkit-backdrop-filter:blur(24px) saturate(.55); transition:opacity 1.25s ease,filter 1.25s ease,visibility 1.25s; }
+    .card-veil::before { content:""; position:absolute; inset:-35%; pointer-events:none; background:radial-gradient(ellipse at 35% 45%,rgba(235,226,215,.16),transparent 45%),radial-gradient(ellipse at 74% 58%,rgba(210,200,210,.18),transparent 50%); filter:blur(35px); animation:veil-drift 9s ease-in-out infinite alternate; }
+    .veil-message { position:relative; z-index:1; display:block; max-width:900px; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-weight:700; font-size:clamp(1.25rem,3vw,2.6rem); line-height:1.35; text-align:center; letter-spacing:.03em; text-shadow:0 0 5px #ffd900,0 0 18px rgba(255,185,0,.9),0 0 38px rgba(255,153,0,.55); }
+    .card-veil:focus-visible { outline:3px solid #ffe41e; outline-offset:-7px; }
+    .card-veil.revealing { opacity:0; filter:blur(32px); visibility:hidden; pointer-events:none; }
+    @keyframes veil-drift { from { transform:translate(-7%,-3%) rotate(-5deg); } to { transform:translate(7%,5%) rotate(5deg); } }
+    @media(prefers-reduced-motion:reduce) { .card-veil::before { animation:none; } .card-veil { transition:none; } }
 
     .overlay { position:fixed; inset:0; z-index:10; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.88); }
     .overlay[aria-hidden="false"] { display:flex; }
@@ -30,23 +38,28 @@
     .video-wrap { width:100%; aspect-ratio:16/9; background:#000; }
     .video-wrap iframe { width:100%; height:100%; border:0; display:block; }
     .video-message { padding:30px 20px; text-align:center; color:#eee; }
-    @media(max-width:850px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } header { padding-top:76px; } }
-    .startseite { position:absolute; top:16px; left:16px; padding:11px 16px; border:1px solid rgba(255,220,130,.65); border-radius:10px; background:rgba(0,0,0,.55); color:#fff; text-decoration:none; font-family:"Cinzel",Georgia,serif; font-weight:700; letter-spacing:.06em; box-shadow:0 0 12px rgba(255,195,50,.18); transition:background .2s ease,box-shadow .2s ease; }
-    .startseite:hover { background:rgba(70,48,0,.7); box-shadow:0 0 16px rgba(255,204,64,.55); }
-    @media(max-width:850px) { header { padding-top:76px; } .startseite { top:12px; left:12px; } }
-    @media(max-width:600px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } main { padding:12px 10px 20px; } .gallery { padding:9px; } .startseite { padding:8px 11px; font-size:.85rem; } }
+    .startseite { position:absolute; top:12px; left:112px; display:flex; flex-direction:column; align-items:center; gap:5px; width:80px; color:#ffe11b; text-decoration:none; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-size:15px; font-weight:700; letter-spacing:.025em; text-shadow:0 0 8px rgba(255,205,0,.85); z-index:2; }
+    .musik { position:absolute; top:12px; left:16px; display:flex; flex-direction:column; align-items:center; gap:5px; width:80px; padding:0; border:0; background:none; cursor:pointer; color:#ffe11b; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-size:15px; font-weight:700; letter-spacing:.025em; text-shadow:0 0 8px rgba(255,205,0,.85); z-index:2; }
+    .musik img { display:block; width:80px; height:80px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(255,202,35,.45)); }
+    .musik:hover img, .musik:focus-visible img { filter:drop-shadow(0 0 14px rgba(255,202,35,.85)); }
+    .startseite img { display:block; width:80px; height:80px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(255,202,35,.45)); }
+    .startseite:hover img, .startseite:focus-visible img { filter:drop-shadow(0 0 14px rgba(255,202,35,.85)); }
+    @media(max-width:850px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } header { padding-top:154px; } }
+    @media(max-width:600px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } main { padding:12px 10px 20px; } .gallery { padding:9px; } .card-veil { padding:22px 12px; } .veil-message { font-size:clamp(1.2rem,5vw,1.7rem); } .startseite { left:104px; } .musik { left:8px; } }
   </style>
 </head>
 <body>
   <header>
-    <a class="startseite" href="https://agrandi123.github.io/Moira_start/">Startseite</a>
+    <audio id="backgroundMusic" src="Sounds/hintergrund.mp3" preload="auto" loop></audio>
+    <button class="musik" id="musicToggle" type="button" aria-label="Musik ausschalten" aria-pressed="true"><img id="musicIcon" src="Bilder/sound-on.png" alt="" width="80" height="80"><span>Musik</span></button>
+    <a class="startseite" href="https://agrandi123.github.io/Moira_start/" aria-label="Zur Startseite"><img src="Bilder/thema_2.png" alt="" onerror="if(!this.dataset.fallback){this.dataset.fallback='jpg';this.src='Bilder/thema_2.jpg';}else if(this.dataset.fallback==='jpg'){this.dataset.fallback='webp';this.src='Bilder/thema_2.webp';}"><span>Startseite</span></a>
     <h1>Moiras Schlüsselmomente</h1>
-    <p class="subtitle">Wähle eine Karte und erfahre ihre Geschichte</p>
   </header>
 
   <main>
     <section class="gallery" aria-label="Die 16 Karten">
       <div class="grid" id="grid"></div>
+      <button class="card-veil" id="cardVeil" type="button" aria-label="Schleier lüften und Karten enthüllen"><span class="veil-message">Wähle eine Karte und erfahre ihre Geschichte</span></button>
     </section>
   </main>
 
@@ -63,8 +76,42 @@
   </div>
 
   <script>
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    const musicToggle = document.getElementById('musicToggle');
+    const musicIcon = document.getElementById('musicIcon');
+    backgroundMusic.volume = 0.16;
+    let musicEnabled = true;
+
+    function updateMusicButton() {
+      musicIcon.src = musicEnabled ? 'Bilder/sound-on.png' : 'Bilder/sound-off.png';
+      musicToggle.setAttribute('aria-pressed', String(musicEnabled));
+      musicToggle.setAttribute('aria-label', musicEnabled ? 'Musik ausschalten' : 'Musik einschalten');
+    }
+    function playBackgroundMusic() {
+      if (!musicEnabled || document.getElementById('overlay').getAttribute('aria-hidden') === 'false') return;
+      const attempt = backgroundMusic.play();
+      if (attempt && typeof attempt.catch === 'function') attempt.catch(() => {
+        // Manche Browser erlauben die Wiedergabe erst nach einer Benutzeraktion.
+      });
+    }
+    musicToggle.addEventListener('click', () => {
+      musicEnabled = !musicEnabled;
+      updateMusicButton();
+      if (musicEnabled) playBackgroundMusic();
+      else backgroundMusic.pause();
+    });
+    // Automatischen Start versuchen; Browser können Audio mit Ton vor dem ersten Klick blockieren.
+    playBackgroundMusic();
+
     const CARD_COUNT = 16;
     const grid = document.getElementById('grid');
+    const cardVeil = document.getElementById('cardVeil');
+    cardVeil.addEventListener('click', () => {
+      playBackgroundMusic();
+      cardVeil.classList.add('revealing');
+      cardVeil.setAttribute('aria-hidden', 'true');
+      cardVeil.addEventListener('transitionend', () => cardVeil.remove(), { once:true });
+    });
     const overlay = document.getElementById('overlay');
     const modalTitle = document.getElementById('modalTitle');
     const videoFrame = document.getElementById('videoFrame');
@@ -77,9 +124,16 @@
     const youtubeLinks = Object.fromEntries(
       Array.from({ length: CARD_COUNT }, (_, index) => [index + 1, DEFAULT_YOUTUBE_LINK])
     );
-    youtubeLinks[1] = 'https://www.youtube.com/watch?v=Z5pQZeyaYOI&t=2688s';
-    youtubeLinks[2] = 'https://www.youtube.com/watch?v=vZFE5Lci-zU&t=662s';
-    youtubeLinks[3] = 'https://www.youtube.com/watch?v=AFh-NicEogU&t=2722s';
+    youtubeLinks[1] = 'https://youtu.be/Z5pQZeyaYOI?si=76mZ7n6ON3lZdHh_&t=2649';
+    youtubeLinks[2] = 'https://youtu.be/X4-BYZuxAlg?si=HvnjEEBO7ss-k4Ca&t=13893';
+    youtubeLinks[3] = 'https://youtu.be/vZFE5Lci-zU?si=HavTDbcxnbwnE9PG&t=757';
+    youtubeLinks[4] = 'https://youtu.be/j4GdasBrC44?si=r1637GZLmrTNUrzZ&t=6990';
+    youtubeLinks[5] = 'https://youtu.be/LhclxN6MY9g?si=A9j1L7CGG7Aeja61&t=2897';
+    youtubeLinks[6] = 'https://youtu.be/CH2WOYklr3E?si=WkkEuE0Ksxz3k_oQ&t=12411';
+    youtubeLinks[7] = 'https://youtu.be/AyA_FwDAYDY?si=IFuggG9SsOZyruNk&t=6345';
+    youtubeLinks[8] = 'https://youtu.be/qvfMmVJfQwU?si=ZVAZwcM1N8qC3n59&t=7844';
+    youtubeLinks[9] = 'https://youtu.be/NBKnXckpmjQ?si=ezZ2YATmn72pKBoF&t=7493';
+    youtubeLinks[10] = 'https://www.youtube.com/watch?v=AFh-NicEogU&t=2722s';
 
     function youtubeEmbedUrl(link) {
       try {
@@ -99,6 +153,7 @@
     }
 
     function openCard(i) {
+      backgroundMusic.pause();
       modalTitle.textContent = `Karte ${i}`;
       const embedUrl = youtubeEmbedUrl(youtubeLinks[i] || '');
       if (embedUrl) {
@@ -116,6 +171,7 @@
       overlay.setAttribute('aria-hidden', 'true');
       const frame = modalBody.querySelector('iframe');
       if (frame) frame.src = '';
+      playBackgroundMusic();
     }
 
     for (let i = 1; i <= CARD_COUNT; i++) {
