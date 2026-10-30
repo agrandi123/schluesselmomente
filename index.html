@@ -21,6 +21,43 @@
     .card button { all:unset; cursor:pointer; display:block; width:100%; }
     .card img { display:block; width:100%; aspect-ratio:2/3; object-fit:cover; background:rgba(255,255,255,.06); }
 
+
+    /* SPOILERWARNUNG wird ausschließlich bei Karten 21–28 eingeblendet. */
+    .card button { position:relative; }
+    .spoiler-warning {
+      position:absolute; inset:0; z-index:1;
+      display:flex; align-items:center; justify-content:center;
+      padding:10px; pointer-events:none;
+      background:rgba(10,0,0,.55);
+      opacity:0; visibility:hidden;
+      transition:opacity .24s ease,visibility .24s ease;
+    }
+    .spoiler-warning span {
+      max-width:100%; padding:10px 7px;
+      border:2px solid #ffcf42; border-radius:9px;
+      background:rgba(35,0,0,.92); color:#ffe882;
+      font-family:"Cinzel",Georgia,serif;
+      font-size:clamp(.65rem,1.35vw,1.02rem);
+      font-weight:700; letter-spacing:.025em;
+      text-align:center; overflow-wrap:anywhere;
+      box-shadow:0 0 12px rgba(255,179,0,.7),inset 0 0 8px rgba(255,74,0,.35);
+      text-shadow:0 0 6px #ff9d00,0 0 13px #ff5000;
+    }
+    .card:hover .spoiler-warning, .card:focus-within .spoiler-warning {
+      opacity:1; visibility:visible;
+    }
+    .card:hover .spoiler-warning span, .card:focus-within .spoiler-warning span {
+      animation:spoiler-glow 1.4s ease-in-out infinite alternate;
+    }
+    @keyframes spoiler-glow {
+      from { box-shadow:0 0 10px rgba(255,179,0,.6),inset 0 0 8px rgba(255,74,0,.25); text-shadow:0 0 5px #ff9d00,0 0 12px #ff5000; }
+      to { box-shadow:0 0 24px rgba(255,190,0,1),0 0 36px rgba(255,63,0,.72),inset 0 0 12px rgba(255,74,0,.55); text-shadow:0 0 11px #ffe14a,0 0 23px #ff5000; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      .spoiler-warning { transition:none; }
+      .card:hover .spoiler-warning span, .card:focus-within .spoiler-warning span { animation:none; }
+    }
+
     /* Geheimnisvoller Schleier über dem gesamten Kartenfeld */
     .card-veil { position:absolute; z-index:3; inset:0; width:100%; height:100%; border:0; border-radius:18px; display:flex; align-items:flex-start; justify-content:center; cursor:pointer; padding:clamp(20px,3vw,38px) 20px; overflow:hidden; color:#ffe41e; background:radial-gradient(ellipse at 48% 42%,rgba(83,77,83,.76),rgba(24,22,30,.91) 65%,rgba(6,5,10,.97)),repeating-linear-gradient(125deg,rgba(255,255,255,.08) 0 2px,transparent 3px 70px); backdrop-filter:blur(24px) saturate(.55); -webkit-backdrop-filter:blur(24px) saturate(.55); transition:opacity 1.25s ease,filter 1.25s ease,visibility 1.25s; }
     .card-veil::before { content:""; position:absolute; inset:-35%; pointer-events:none; background:radial-gradient(ellipse at 35% 45%,rgba(235,226,215,.16),transparent 45%),radial-gradient(ellipse at 74% 58%,rgba(210,200,210,.18),transparent 50%); filter:blur(35px); animation:veil-drift 9s ease-in-out infinite alternate; }
@@ -57,7 +94,7 @@
   </header>
 
   <main>
-    <section class="gallery" aria-label="Die 16 Karten">
+    <section class="gallery" aria-label="Die 28 Karten">
       <div class="grid" id="grid"></div>
       <button class="card-veil" id="cardVeil" type="button" aria-label="Schleier lüften und Karten enthüllen"><span class="veil-message">Wähle eine Karte und erfahre ihre Geschichte</span></button>
     </section>
@@ -103,7 +140,7 @@
     // Automatischen Start versuchen; Browser können Audio mit Ton vor dem ersten Klick blockieren.
     playBackgroundMusic();
 
-    const CARD_COUNT = 16;
+    const CARD_COUNT = 28;
     const grid = document.getElementById('grid');
     const cardVeil = document.getElementById('cardVeil');
     cardVeil.addEventListener('click', () => {
@@ -118,22 +155,37 @@
     const modalBody = document.getElementById('modalBody');
     const closeBtn = document.getElementById('closeBtn');
 
-    // Hier die YouTube-Links für die jeweiligen Karten eintragen.
-    // Beispiel: 1: 'https://www.youtube.com/watch?v=VIDEO_ID'
-    const DEFAULT_YOUTUBE_LINK = 'https://www.youtube.com/watch?v=o61Tl5aI9eM&t=2745s';
-    const youtubeLinks = Object.fromEntries(
-      Array.from({ length: CARD_COUNT }, (_, index) => [index + 1, DEFAULT_YOUTUBE_LINK])
-    );
-    youtubeLinks[1] = 'https://youtu.be/Z5pQZeyaYOI?si=76mZ7n6ON3lZdHh_&t=2649';
-    youtubeLinks[2] = 'https://youtu.be/X4-BYZuxAlg?si=HvnjEEBO7ss-k4Ca&t=13893';
-    youtubeLinks[3] = 'https://youtu.be/vZFE5Lci-zU?si=HavTDbcxnbwnE9PG&t=757';
-    youtubeLinks[4] = 'https://youtu.be/j4GdasBrC44?si=r1637GZLmrTNUrzZ&t=6990';
-    youtubeLinks[5] = 'https://youtu.be/LhclxN6MY9g?si=A9j1L7CGG7Aeja61&t=2897';
-    youtubeLinks[6] = 'https://youtu.be/CH2WOYklr3E?si=WkkEuE0Ksxz3k_oQ&t=12411';
-    youtubeLinks[7] = 'https://youtu.be/AyA_FwDAYDY?si=IFuggG9SsOZyruNk&t=6345';
-    youtubeLinks[8] = 'https://youtu.be/qvfMmVJfQwU?si=ZVAZwcM1N8qC3n59&t=7844';
-    youtubeLinks[9] = 'https://youtu.be/NBKnXckpmjQ?si=ezZ2YATmn72pKBoF&t=7493';
-    youtubeLinks[10] = 'https://www.youtube.com/watch?v=AFh-NicEogU&t=2722s';
+    // YouTube-Links mit den individuellen Startzeiten für alle 28 Karten.
+    const youtubeLinks = {
+      1: 'https://youtu.be/Z5pQZeyaYOI?si=76mZ7n6ON3lZdHh_&t=2649',
+      2: 'https://youtu.be/X4-BYZuxAlg?si=dDi7vVn8ltKGXkmm&t=13875',
+      3: 'https://youtu.be/vZFE5Lci-zU?si=HavTDbcxnbwnE9PG&t=757',
+      4: 'https://youtu.be/j4GdasBrC44?si=r1637GZLmrTNUrzZ&t=6990',
+      5: 'https://youtu.be/LhclxN6MY9g?si=A9j1L7CGG7Aeja61&t=2897',
+      6: 'https://youtu.be/CH2WOYklr3E?si=WkkEuE0Ksxz3k_oQ&t=12411',
+      7: 'https://youtu.be/AyA_FwDAYDY?si=IFuggG9SsOZyruNk&t=6345',
+      8: 'https://youtu.be/qvfMmVJfQwU?si=ZVAZwcM1N8qC3n59&t=7844',
+      9: 'https://youtu.be/NBKnXckpmjQ?si=ezZ2YATmn72pKBoF&t=7493',
+      10: 'https://www.youtube.com/watch?v=AFh-NicEogU&t=2722s',
+      11: 'https://youtu.be/5-nc6L_L_qI?si=82r9D0M0DdTAfvhP&t=2541&',
+      12: 'https://youtu.be/Z0pSTH5gxoI?si=hze_c45fN3p9d3Z9&t=1819',
+      13: 'https://youtu.be/alzsVoViWsE?si=Q5phEQQEzAPcyqGz&t=494',
+      14: 'https://youtu.be/fJQCQIAMSWE?si=3BEwZmn54Zpfx3__&t=7694',
+      15: 'https://youtu.be/lJgiGHAPZ8U?si=OnnGdlz7aUwBPjbS&t=8413',
+      16: 'https://youtu.be/AUCtvWFYYw0?si=Dv2yXmdnbCgOpl_-&t=282',
+      17: 'https://youtu.be/fJQCQIAMSWE?si=FwWhEuDf12v7OGMO&t=15641',
+      18: 'https://youtu.be/KUvL1VSMIWE?si=_bHASueXvDQtKATR&t=4567',
+      19: 'https://youtu.be/YGZbh7rMJkQ?si=dvuQn2S-Pefqno9X&t=2942',
+      20: 'https://youtu.be/Z0pSTH5gxoI?si=Q5fYHIf5-RHPEUPu&t=10241',
+      21: 'https://youtu.be/Z0pSTH5gxoI?si=xkCXiohtIBVDjagb&t=14484',
+      22: 'https://youtu.be/B075Spaf9oE?si=n1yPjQYkaNa0deu4&t=10942',
+      23: 'https://youtu.be/XeCOX8Ww1GE?si=5Y8j77bs-rpupTgO&t=1480',
+      24: 'https://youtu.be/fJQCQIAMSWE?si=9CaUMGjbxUmM5dqH&t=3052',
+      25: 'https://youtu.be/eq9JoLj44YU?si=MQBhpdhjJp0CSFqr&t=7203',
+      26: 'https://youtu.be/iAxihuwBFOw?si=H8SSqxOeuGwiNksW&t=2704',
+      27: 'https://youtu.be/RzHNX5WOEUA?si=TJNmhxEHUhxTXNBb&t=3069',
+      28: 'https://youtu.be/nr83n42nKfA?si=AisY8pT1LkxqijMz&t=5751'
+    };
 
     function youtubeEmbedUrl(link) {
       try {
@@ -179,7 +231,7 @@
       card.className = 'card';
       const button = document.createElement('button');
       button.type = 'button';
-      button.setAttribute('aria-label', `Karte ${i} öffnen`);
+      button.setAttribute('aria-label', i >= 21 ? `Karte ${i} öffnen (Spoiler)` : `Karte ${i} öffnen`);
       button.addEventListener('click', () => openCard(i));
       const img = document.createElement('img');
       img.loading = 'lazy';
@@ -195,6 +247,15 @@
         }
       };
       button.appendChild(img);
+      if (i >= 21 && i <= 28) {
+        const spoilerWarning = document.createElement('span');
+        spoilerWarning.className = 'spoiler-warning';
+        spoilerWarning.setAttribute('aria-hidden', 'true');
+        const warningText = document.createElement('span');
+        warningText.textContent = 'SPOILERWARNUNG';
+        spoilerWarning.appendChild(warningText);
+        button.appendChild(spoilerWarning);
+      }
 
       card.appendChild(button);
       grid.appendChild(card);
