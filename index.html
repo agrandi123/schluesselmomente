@@ -6,11 +6,42 @@
   <title>Moiras Schlüsselmomente</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    :root { --gap:14px; --radius:14px; --max-width:1200px; }
+    /* Das Kartenfeld nutzt mehr von der 1920px-Designbreite.
+       Vier Karten pro Reihe bleiben erhalten, ohne die Bilder zu beschneiden. */
+    :root { --gap:14px; --radius:14px; --max-width:1350px; }
     * { box-sizing:border-box; }
     html,body { min-height:100%; margin:0; font-family:"Cinzel",Georgia,serif; }
-    body { background:#111 url("Bilder/hintergrund.jpg") center/cover no-repeat fixed; color:#fff; }
-    header { text-align:center; padding:26px 16px 22px; background:rgba(0,0,0,.52); border-bottom:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px); }
+    /* Full HD (1920 x 1080) ist die feste Designvorlage. */
+    html { background:#090909; }
+    body { background:#090909; color:#fff; overflow-x:clip; }
+    .site-frame {
+      position:relative;
+      isolation:isolate;
+      width:var(--stage-width,100%);
+      min-height:100vh;
+      margin-inline:auto;
+    }
+    /* Der Hintergrund bleibt beim Scrollen fixiert, aber nur innerhalb der
+       eigentlichen 16:9-Bildfläche; außerhalb liegen die dunklen Seitenbalken. */
+    .site-frame::before {
+      content:"";
+      position:fixed;
+      z-index:-1;
+      top:0;
+      left:50%;
+      transform:translateX(-50%);
+      width:var(--stage-width,100%);
+      height:100vh;
+      background:#111 url("Bilder/hintergrund.jpg") center/cover no-repeat;
+      pointer-events:none;
+    }
+    .site-canvas { width:1920px; zoom:var(--stage-scale,1); }
+    /* Das Video-Fenster skaliert genauso wie der restliche Full-HD-Entwurf. */
+    .modal { transform:scale(var(--stage-scale,1)); transform-origin:center; }
+    /* Auf kleinen Mobilgeräten bleibt das vorhandene, bedienbare Layout aktiv. */
+    @media (max-width:850px) { .site-canvas { width:100%; zoom:1; } .modal { transform:none; } }
+    /* Kopfzeile beim Scrollen sichtbar halten, auch im skalierten 16:9-Layout. */
+    header { position:sticky; top:0; z-index:20; text-align:center; padding:26px 16px 22px; background:rgba(0,0,0,.52); border-bottom:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px); }
     h1 { margin:0; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; letter-spacing:.035em; color:#ffe11b; text-shadow:0 0 5px #ffe31c,0 0 15px rgba(255,200,0,.95),0 0 30px rgba(255,155,0,.65); }
     main { max-width:var(--max-width); margin:0 auto; padding:18px 16px 28px; }
     .gallery { position:relative; isolation:isolate; padding:14px; border-radius:18px; background:rgba(0,0,0,.78); border:1px solid rgba(255,255,255,.18); box-shadow:0 10px 40px rgba(0,0,0,.45); }
@@ -59,7 +90,7 @@
     }
 
     /* Geheimnisvoller Schleier über dem gesamten Kartenfeld */
-    .card-veil { position:absolute; z-index:3; inset:0; width:100%; height:100%; border:0; border-radius:18px; display:flex; align-items:flex-start; justify-content:center; cursor:pointer; padding:clamp(20px,3vw,38px) 20px; overflow:hidden; color:#ffe41e; background:radial-gradient(ellipse at 48% 42%,rgba(83,77,83,.76),rgba(24,22,30,.91) 65%,rgba(6,5,10,.97)),repeating-linear-gradient(125deg,rgba(255,255,255,.08) 0 2px,transparent 3px 70px); backdrop-filter:blur(24px) saturate(.55); -webkit-backdrop-filter:blur(24px) saturate(.55); transition:opacity 1.25s ease,filter 1.25s ease,visibility 1.25s; }
+    .card-veil { position:absolute; z-index:3; inset:0; width:100%; height:100%; border:0; border-radius:18px; display:flex; align-items:flex-start; justify-content:center; cursor:pointer; padding:clamp(20px,3vw,38px) 20px; overflow:hidden; color:#ffe41e; background:radial-gradient(ellipse at 48% 42%,rgba(83,77,83,.42),rgba(24,22,30,.55) 65%,rgba(6,5,10,.68)),repeating-linear-gradient(125deg,rgba(255,255,255,.055) 0 2px,transparent 3px 70px); backdrop-filter:blur(6px) saturate(.82); -webkit-backdrop-filter:blur(6px) saturate(.82); transition:opacity 1.25s ease,filter 1.25s ease,visibility 1.25s; }
     .card-veil::before { content:""; position:absolute; inset:-35%; pointer-events:none; background:radial-gradient(ellipse at 35% 45%,rgba(235,226,215,.16),transparent 45%),radial-gradient(ellipse at 74% 58%,rgba(210,200,210,.18),transparent 50%); filter:blur(35px); animation:veil-drift 9s ease-in-out infinite alternate; }
     .veil-message { position:relative; z-index:1; display:block; max-width:900px; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-weight:700; font-size:clamp(1.25rem,3vw,2.6rem); line-height:1.35; text-align:center; letter-spacing:.03em; text-shadow:0 0 5px #ffd900,0 0 18px rgba(255,185,0,.9),0 0 38px rgba(255,153,0,.55); }
     .card-veil:focus-visible { outline:3px solid #ffe41e; outline-offset:-7px; }
@@ -75,6 +106,61 @@
     .video-wrap { width:100%; aspect-ratio:16/9; background:#000; }
     .video-wrap iframe { width:100%; height:100%; border:0; display:block; }
     .video-message { padding:30px 20px; text-align:center; color:#eee; }
+
+    /* Bestätigung nur für Karten 21–28: kein Video vor Klick auf OK. */
+    .spoiler-overlay {
+      position:fixed; inset:0; z-index:30;
+      display:none; align-items:center; justify-content:center;
+      padding:22px;
+      background:rgba(0,0,0,.84);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+    }
+    .spoiler-overlay[aria-hidden="false"] { display:flex; }
+    .spoiler-dialog {
+      width:min(550px,100%);
+      padding:38px 32px 32px;
+      border:2px solid #ffca52;
+      border-radius:18px;
+      background:radial-gradient(ellipse at 50% 0%,#392118,#140d0c 75%);
+      color:#f8edd2;
+      box-shadow:0 0 24px rgba(255,158,26,.32),0 26px 76px rgba(0,0,0,.75);
+      text-align:center;
+      transform:scale(var(--stage-scale,1));
+      transform-origin:center;
+    }
+    .spoiler-dialog h2 {
+      margin:0 0 16px;
+      font-family:"Cinzel Decorative","Cinzel",Georgia,serif;
+      font-size:clamp(1.55rem,2.5vw,2.1rem);
+      color:#ffe04f;
+      text-shadow:0 0 11px rgba(255,157,0,.9),0 0 24px rgba(255,79,0,.5);
+    }
+    .spoiler-dialog p { margin:0 0 28px; font-size:1rem; line-height:1.7; }
+    .spoiler-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; }
+    .spoiler-actions button {
+      min-width:155px; padding:13px 23px;
+      border:1px solid #d4ac55; border-radius:9px;
+      background:#30251e; color:#fff1cf;
+      font:700 1rem "Cinzel",Georgia,serif;
+      cursor:pointer;
+      transition:background .2s, box-shadow .2s;
+    }
+    .spoiler-actions button:hover, .spoiler-actions button:focus-visible {
+      background:#533a20; box-shadow:0 0 13px rgba(255,205,93,.55);
+    }
+    .spoiler-actions .spoiler-confirm {
+      border-color:#ffdc72; background:#96611b; color:#fff;
+    }
+    .spoiler-actions .spoiler-confirm:hover, .spoiler-actions .spoiler-confirm:focus-visible {
+      background:#b77a22;
+    }
+    .spoiler-actions button:focus-visible { outline:3px solid #ffe88a; outline-offset:3px; }
+    @media(max-width:850px) { .spoiler-dialog { transform:none; } }
+    @media(max-width:600px) {
+      .spoiler-dialog { padding:28px 20px 24px; }
+      .spoiler-actions button { min-width:120px; }
+    }
     .startseite { position:absolute; top:12px; left:112px; display:flex; flex-direction:column; align-items:center; gap:5px; width:80px; color:#ffe11b; text-decoration:none; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-size:15px; font-weight:700; letter-spacing:.025em; text-shadow:0 0 8px rgba(255,205,0,.85); z-index:2; }
     .musik { position:absolute; top:12px; left:16px; display:flex; flex-direction:column; align-items:center; gap:5px; width:80px; padding:0; border:0; background:none; cursor:pointer; color:#ffe11b; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-size:15px; font-weight:700; letter-spacing:.025em; text-shadow:0 0 8px rgba(255,205,0,.85); z-index:2; }
     .musik img { display:block; width:80px; height:80px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(255,202,35,.45)); }
@@ -86,6 +172,8 @@
   </style>
 </head>
 <body>
+  <div class="site-frame" id="siteFrame">
+    <div class="site-canvas" id="siteCanvas">
   <header>
     <audio id="backgroundMusic" src="Sounds/hintergrund.mp3" preload="auto" loop></audio>
     <button class="musik" id="musicToggle" type="button" aria-label="Musik ausschalten" aria-pressed="true"><img id="musicIcon" src="Bilder/sound-on.png" alt="" width="80" height="80"><span>Musik</span></button>
@@ -99,6 +187,8 @@
       <button class="card-veil" id="cardVeil" type="button" aria-label="Schleier lüften und Karten enthüllen"><span class="veil-message">Wähle eine Karte und erfahre ihre Geschichte</span></button>
     </section>
   </main>
+    </div>
+  </div>
 
   <div class="overlay" id="overlay" aria-hidden="true">
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -112,7 +202,47 @@
     </section>
   </div>
 
+  <!-- Die Spoilerbestätigung ist unabhängig vom Videofenster: beim Abbrechen
+       wird kein YouTube-iframe geladen oder gestartet. -->
+  <div class="spoiler-overlay" id="spoilerOverlay" aria-hidden="true">
+    <section class="spoiler-dialog" role="alertdialog" aria-modal="true" aria-labelledby="spoilerTitle" aria-describedby="spoilerDescription">
+      <h2 id="spoilerTitle">Achtung, Spoiler!!!</h2>
+      <p id="spoilerDescription">Diese Karte verrät wichtige Inhalte der Geschichte. Möchtest du das Video trotzdem ansehen?</p>
+      <div class="spoiler-actions">
+        <button id="spoilerBack" type="button">Zurück</button>
+        <button id="spoilerConfirm" class="spoiler-confirm" type="button">OK</button>
+      </div>
+    </section>
+  </div>
+
   <script>
+    // Full-HD-Skalierung: 16:9-Monitore nutzen immer die volle Fensterbreite.
+    // Wichtig: Die tatsächliche Bildschirmhöhe statt der kleineren Browser-
+    // Innenhöhe verwenden, damit die Browser-Symbolleiste keine Balken erzeugt.
+    function updateStageScale() {
+      const viewportWidth = document.documentElement.clientWidth;
+      const mobile = viewportWidth <= 850;
+      let stageWidth = viewportWidth;
+
+      if (!mobile && window.screen && screen.width > 0 && screen.height > 0) {
+        const screenRatio = screen.width / screen.height;
+        const fullHdRatio = 16 / 9;
+        // Nur WIRKLICH breitere Bildschirme bekommen Seitenbalken.
+        if (screenRatio > fullHdRatio + 0.035) {
+          stageWidth = Math.min(viewportWidth, screen.height * fullHdRatio);
+        }
+      }
+
+      const scale = mobile ? 1 : stageWidth / 1920;
+      document.documentElement.style.setProperty('--stage-width', stageWidth + 'px');
+      document.documentElement.style.setProperty('--stage-scale', String(scale));
+    }
+    updateStageScale();
+    window.addEventListener('resize', updateStageScale, { passive:true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateStageScale, { passive:true });
+    }
+
     const backgroundMusic = document.getElementById('backgroundMusic');
     const musicToggle = document.getElementById('musicToggle');
     const musicIcon = document.getElementById('musicIcon');
@@ -226,13 +356,47 @@
       playBackgroundMusic();
     }
 
+
+    // Karten mit Spoiler: erst Warnfenster, dann nach Bestätigung das Video.
+    const spoilerOverlay = document.getElementById('spoilerOverlay');
+    const spoilerBack = document.getElementById('spoilerBack');
+    const spoilerConfirm = document.getElementById('spoilerConfirm');
+    let pendingSpoilerCard = null;
+    let spoilerOriginButton = null;
+
+    function showSpoilerDialog(cardNumber, originButton) {
+      pendingSpoilerCard = cardNumber;
+      spoilerOriginButton = originButton;
+      spoilerOverlay.setAttribute('aria-hidden', 'false');
+      spoilerBack.focus(); // Sichere Standardauswahl: Zurück
+    }
+    function dismissSpoilerDialog() {
+      spoilerOverlay.setAttribute('aria-hidden', 'true');
+      pendingSpoilerCard = null;
+      if (spoilerOriginButton && spoilerOriginButton.isConnected) {
+        spoilerOriginButton.focus({ preventScroll:true });
+      }
+      spoilerOriginButton = null;
+    }
+    function confirmSpoilerDialog() {
+      if (pendingSpoilerCard === null) return;
+      const cardNumber = pendingSpoilerCard;
+      pendingSpoilerCard = null;
+      spoilerOriginButton = null;
+      spoilerOverlay.setAttribute('aria-hidden', 'true');
+      openCard(cardNumber); // Erst hier wird der YouTube-iframe geladen.
+    }
+
     for (let i = 1; i <= CARD_COUNT; i++) {
       const card = document.createElement('article');
       card.className = 'card';
       const button = document.createElement('button');
       button.type = 'button';
       button.setAttribute('aria-label', i >= 21 ? `Karte ${i} öffnen (Spoiler)` : `Karte ${i} öffnen`);
-      button.addEventListener('click', () => openCard(i));
+      button.addEventListener('click', () => {
+        if (i >= 21 && i <= 28) showSpoilerDialog(i, button);
+        else openCard(i);
+      });
       const img = document.createElement('img');
       img.loading = 'lazy';
       img.alt = `Karte ${i}`;
@@ -263,7 +427,30 @@
 
     closeBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-    window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    spoilerBack.addEventListener('click', dismissSpoilerDialog);
+    spoilerConfirm.addEventListener('click', confirmSpoilerDialog);
+    spoilerOverlay.addEventListener('click', e => {
+      if (e.target === spoilerOverlay) dismissSpoilerDialog();
+    });
+    window.addEventListener('keydown', e => {
+      if (spoilerOverlay.getAttribute('aria-hidden') === 'false') {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          dismissSpoilerDialog();
+        } else if (e.key === 'Tab') {
+          // Die Tastaturbedienung bleibt im Warnfenster, bis man entscheidet.
+          if (e.shiftKey && document.activeElement === spoilerBack) {
+            e.preventDefault();
+            spoilerConfirm.focus();
+          } else if (!e.shiftKey && document.activeElement === spoilerConfirm) {
+            e.preventDefault();
+            spoilerBack.focus();
+          }
+        }
+      } else if (e.key === 'Escape' && overlay.getAttribute('aria-hidden') === 'false') {
+        closeModal();
+      }
+    });
 
 
   </script>
