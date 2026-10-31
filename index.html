@@ -6,9 +6,8 @@
   <title>Moiras Schlüsselmomente</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    /* Das Kartenfeld nutzt mehr von der 1920px-Designbreite.
-       Vier Karten pro Reihe bleiben erhalten, ohne die Bilder zu beschneiden. */
-    :root { --gap:14px; --radius:14px; --max-width:1350px; }
+    /* Kartenfeld mit fünf Karten pro Reihe und 1400px Maximalbreite. */
+    :root { --gap:14px; --radius:14px; --max-width:1400px; }
     * { box-sizing:border-box; }
     html,body { min-height:100%; margin:0; font-family:"Cinzel",Georgia,serif; }
     /* Full HD (1920 x 1080) ist die feste Designvorlage. */
@@ -41,11 +40,11 @@
     /* Auf kleinen Mobilgeräten bleibt das vorhandene, bedienbare Layout aktiv. */
     @media (max-width:850px) { .site-canvas { width:100%; zoom:1; } .modal { transform:none; } }
     /* Kopfzeile beim Scrollen sichtbar halten, auch im skalierten 16:9-Layout. */
-    header { position:sticky; top:0; z-index:20; text-align:center; padding:26px 16px 22px; background:rgba(0,0,0,.52); border-bottom:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px); }
+    header { position:sticky; top:0; z-index:20; text-align:center; padding:26px 16px 22px; background:#090909; border-bottom:1px solid rgba(255,255,255,.15); }
     h1 { margin:0; font-family:"Cinzel Decorative","Cinzel",Georgia,serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; letter-spacing:.035em; color:#ffe11b; text-shadow:0 0 5px #ffe31c,0 0 15px rgba(255,200,0,.95),0 0 30px rgba(255,155,0,.65); }
     main { max-width:var(--max-width); margin:0 auto; padding:18px 16px 28px; }
     .gallery { position:relative; isolation:isolate; padding:14px; border-radius:18px; background:rgba(0,0,0,.78); border:1px solid rgba(255,255,255,.18); box-shadow:0 10px 40px rgba(0,0,0,.45); }
-    .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--gap); }
+    .grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--gap); }
     .card { overflow:hidden; border-radius:var(--radius); border:1px solid rgba(255,255,255,.18); background:rgba(0,0,0,.35); box-shadow:0 8px 22px rgba(0,0,0,.35); transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
     .card:hover, .card:focus-within { transform:translateY(-4px); border-color:rgba(255,218,105,.95); box-shadow:0 0 10px rgba(255,204,64,.75),0 0 26px rgba(255,190,40,.55),0 12px 30px rgba(0,0,0,.55); }
     .card:hover img, .card:focus-within img { filter:drop-shadow(0 0 8px rgba(255,211,77,.85)) brightness(1.06); }
@@ -182,7 +181,7 @@
   </header>
 
   <main>
-    <section class="gallery" aria-label="Die 28 Karten">
+    <section class="gallery" aria-label="Die 30 Karten">
       <div class="grid" id="grid"></div>
       <button class="card-veil" id="cardVeil" type="button" aria-label="Schleier lüften und Karten enthüllen"><span class="veil-message">Wähle eine Karte und erfahre ihre Geschichte</span></button>
     </section>
@@ -270,7 +269,7 @@
     // Automatischen Start versuchen; Browser können Audio mit Ton vor dem ersten Klick blockieren.
     playBackgroundMusic();
 
-    const CARD_COUNT = 28;
+    const CARD_COUNT = 30;
     const grid = document.getElementById('grid');
     const cardVeil = document.getElementById('cardVeil');
     cardVeil.addEventListener('click', () => {
@@ -285,7 +284,7 @@
     const modalBody = document.getElementById('modalBody');
     const closeBtn = document.getElementById('closeBtn');
 
-    // YouTube-Links mit den individuellen Startzeiten für alle 28 Karten.
+    // YouTube-Links mit den individuellen Startzeiten für alle 30 Karten.
     const youtubeLinks = {
       1: 'https://youtu.be/Z5pQZeyaYOI?si=76mZ7n6ON3lZdHh_&t=2649',
       2: 'https://youtu.be/X4-BYZuxAlg?si=dDi7vVn8ltKGXkmm&t=13875',
@@ -314,7 +313,9 @@
       25: 'https://youtu.be/eq9JoLj44YU?si=MQBhpdhjJp0CSFqr&t=7203',
       26: 'https://youtu.be/iAxihuwBFOw?si=H8SSqxOeuGwiNksW&t=2704',
       27: 'https://youtu.be/RzHNX5WOEUA?si=TJNmhxEHUhxTXNBb&t=3069',
-      28: 'https://youtu.be/nr83n42nKfA?si=AisY8pT1LkxqijMz&t=5751'
+      28: 'https://youtu.be/nr83n42nKfA?si=AisY8pT1LkxqijMz&t=5751',
+      29: 'https://www.youtube.com/watch?v=qkr6SgUH63U&list=PLguJavb1kM-R2PXI45vFJu3Q1wIlW2RMF',
+      30: 'https://www.youtube.com/watch?v=zRMdggs8mf8&list=PLguJavb1kM-Th9SCM_EzC3EGZgnrbuM23'
     };
 
     function youtubeEmbedUrl(link) {
@@ -392,7 +393,7 @@
       card.className = 'card';
       const button = document.createElement('button');
       button.type = 'button';
-      button.setAttribute('aria-label', i >= 20 ? `Karte ${i} öffnen (Spoiler)` : `Karte ${i} öffnen`);
+      button.setAttribute('aria-label', i >= 20 && i <= 28 ? `Karte ${i} öffnen (Spoiler)` : `Karte ${i} öffnen`);
       button.addEventListener('click', () => {
         if (i >= 20 && i <= 28) showSpoilerDialog(i, button);
         else openCard(i);
