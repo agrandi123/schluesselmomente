@@ -52,7 +52,7 @@
     .card img { display:block; width:100%; aspect-ratio:2/3; object-fit:cover; background:rgba(255,255,255,.06); }
 
 
-    /* SPOILERWARNUNG wird ausschließlich bei Karten 20–28 eingeblendet. */
+    /* SPOILERWARNUNG wird wie bisher bei Karten 28–36 eingeblendet. */
     .card button { position:relative; }
     .spoiler-warning {
       position:absolute; inset:0; z-index:1;
@@ -109,7 +109,7 @@
     #modalBody { min-height:0; }
     #modalBody .video-wrap { max-height:calc(96vh - 62px); margin-inline:auto; }
 
-    /* Bestätigung nur für Karten 21–28: kein Video vor Klick auf OK. */
+    /* Bestätigung für Karten 28–36: kein Video vor Klick auf OK. */
     .spoiler-overlay {
       position:fixed; inset:0; z-index:30;
       display:none; align-items:center; justify-content:center;
@@ -184,7 +184,7 @@
   </header>
 
   <main>
-    <section class="gallery" aria-label="Die 30 Karten">
+    <section class="gallery" aria-label="Die Karten">
       <div class="grid" id="grid"></div>
       <button class="card-veil" id="cardVeil" type="button" aria-label="Schleier lüften und Karten enthüllen"><span class="veil-message">Wähle eine Karte und erfahre ihre Geschichte</span></button>
     </section>
@@ -272,7 +272,6 @@
     // Automatischen Start versuchen; Browser können Audio mit Ton vor dem ersten Klick blockieren.
     playBackgroundMusic();
 
-    const CARD_COUNT = 30;
     const grid = document.getElementById('grid');
     const cardVeil = document.getElementById('cardVeil');
     cardVeil.addEventListener('click', () => {
@@ -287,7 +286,7 @@
     const modalBody = document.getElementById('modalBody');
     const closeBtn = document.getElementById('closeBtn');
 
-    // YouTube-Links mit den individuellen Startzeiten für alle 30 Karten.
+    // Eine Karte pro hinterlegtem Link; Startzeiten sind in den URLs enthalten.
     const youtubeLinks = {
       1: 'https://youtu.be/Z5pQZeyaYOI?si=76mZ7n6ON3lZdHh_&t=2649',
       2: 'https://youtu.be/X4-BYZuxAlg?si=dDi7vVn8ltKGXkmm&t=13875',
@@ -298,27 +297,35 @@
       7: 'https://youtu.be/AyA_FwDAYDY?si=IFuggG9SsOZyruNk&t=6345',
       8: 'https://youtu.be/qvfMmVJfQwU?si=ZVAZwcM1N8qC3n59&t=7844',
       9: 'https://youtu.be/NBKnXckpmjQ?si=ezZ2YATmn72pKBoF&t=7493',
-      10: 'https://youtu.be/g6LgBFQqVLE?si=nK-3soxUl7J0Bjb2&t=5954',
-      11: 'https://youtu.be/5-nc6L_L_qI?si=82r9D0M0DdTAfvhP&t=2541&',
-      12: 'https://youtu.be/Z0pSTH5gxoI?si=hze_c45fN3p9d3Z9&t=1819',
-      13: 'https://youtu.be/alzsVoViWsE?si=Q5phEQQEzAPcyqGz&t=4946',
-      14: 'https://youtu.be/fJQCQIAMSWE?si=3BEwZmn54Zpfx3__&t=7694',
-      15: 'https://youtu.be/lJgiGHAPZ8U?si=OnnGdlz7aUwBPjbS&t=8413',
-      16: 'https://youtu.be/AUCtvWFYYw0?si=Dv2yXmdnbCgOpl_-&t=282',
-      17: 'https://youtu.be/fJQCQIAMSWE?si=FwWhEuDf12v7OGMO&t=15641',
-      18: 'https://youtu.be/KUvL1VSMIWE?si=_bHASueXvDQtKATR&t=4567',
-      19: 'https://youtu.be/YGZbh7rMJkQ?si=dvuQn2S-Pefqno9X&t=2942',
-      20: 'https://youtu.be/Z0pSTH5gxoI?si=Q5fYHIf5-RHPEUPu&t=10241',
-      21: 'https://youtu.be/Z0pSTH5gxoI?si=xkCXiohtIBVDjagb&t=14484',
-      22: 'https://youtu.be/B075Spaf9oE?si=n1yPjQYkaNa0deu4&t=10942',
-      23: 'https://youtu.be/XeCOX8Ww1GE?si=5Y8j77bs-rpupTgO&t=1480',
-      24: 'https://youtu.be/fJQCQIAMSWE?si=9CaUMGjbxUmM5dqH&t=3052',
-      25: 'https://youtu.be/eq9JoLj44YU?si=MQBhpdhjJp0CSFqr&t=7203',
-      26: 'https://youtu.be/iAxihuwBFOw?si=H8SSqxOeuGwiNksW&t=2704',
-      27: 'https://youtu.be/RzHNX5WOEUA?si=TJNmhxEHUhxTXNBb&t=3069',
-      28: 'https://youtu.be/nr83n42nKfA?si=AisY8pT1LkxqijMz&t=5751',
-      29: 'https://www.youtube.com/watch?v=qkr6SgUH63U&list=PLguJavb1kM-R2PXI45vFJu3Q1wIlW2RMF',
-      30: 'https://www.youtube.com/watch?v=zRMdggs8mf8&list=PLguJavb1kM-Th9SCM_EzC3EGZgnrbuM23'
+      10: 'https://www.youtube.com/watch?v=AFh-NicEogU&t=2722s',
+      11: 'https://youtu.be/FtdxaDUkFPc?si=e1rGuBq69rC20aAQ&t=9478',
+      12: 'https://youtu.be/kLDV73I0CQg?si=cE90l6jGM9NgBWIx&t=2726',
+      13: 'https://youtu.be/vJpwnO-YIKM?si=GnvAiV4dYO05E97S&t=11992',
+      14: 'https://youtu.be/fYHNcxSG10U?si=gbPL4QqOaBbIcaiq&t=18182',
+      15: 'https://youtu.be/AvTsoulbn30?si=TLJ__gZaNBbNOq-n&t=16038',
+      16: 'https://youtu.be/AyA_FwDAYDY?si=y2zICnCW89cnpmkv&t=2183',
+      17: 'https://www.youtube.com/watch?v=qvfMmVJfQwU&t=10121s',
+      18: 'https://www.youtube.com/watch?v=6cKMfRz2FW0&t=6927s',
+      19: 'https://youtu.be/5-nc6L_L_qI?si=82r9D0M0DdTAfvhP&t=2541&',
+      20: 'https://youtu.be/Z0pSTH5gxoI?si=hze_c45fN3p9d3Z9&t=1819',
+      21: 'https://youtu.be/alzsVoViWsE?si=Q5phEQQEzAPcyqGz&t=4946',
+      22: 'https://youtu.be/fJQCQIAMSWE?si=3BEwZmn54Zpfx3__&t=7694',
+      23: 'https://youtu.be/lJgiGHAPZ8U?si=OnnGdlz7aUwBPjbS&t=8413',
+      24: 'https://youtu.be/AUCtvWFYYw0?si=Dv2yXmdnbCgOpl_-&t=282',
+      25: 'https://youtu.be/fJQCQIAMSWE?si=FwWhEuDf12v7OGMO&t=15641',
+      26: 'https://youtu.be/KUvL1VSMIWE?si=_bHASueXvDQtKATR&t=4567',
+      27: 'https://youtu.be/YGZbh7rMJkQ?si=dvuQn2S-Pefqno9X&t=2942',
+      28: 'https://youtu.be/Z0pSTH5gxoI?si=Q5fYHIf5-RHPEUPu&t=10241',
+      29: 'https://youtu.be/Z0pSTH5gxoI?si=xkCXiohtIBVDjagb&t=14484',
+      30: 'https://youtu.be/B075Spaf9oE?si=n1yPjQYkaNa0deu4&t=10942',
+      31: 'https://youtu.be/XeCOX8Ww1GE?si=5Y8j77bs-rpupTgO&t=1480',
+      32: 'https://youtu.be/fJQCQIAMSWE?si=9CaUMGjbxUmM5dqH&t=3052',
+      33: 'https://youtu.be/eq9JoLj44YU?si=MQBhpdhjJp0CSFqr&t=7203',
+      34: 'https://youtu.be/iAxihuwBFOw?si=H8SSqxOeuGwiNksW&t=2704',
+      35: 'https://youtu.be/RzHNX5WOEUA?si=TJNmhxEHUhxTXNBb&t=3069',
+      36: 'https://youtu.be/nr83n42nKfA?si=AisY8pT1LkxqijMz&t=5751',
+      37: 'https://www.youtube.com/watch?v=qkr6SgUH63U&list=PLguJavb1kM-R2PXI45vFJu3Q1wIlW2RMF',
+      38: 'https://www.youtube.com/watch?v=zRMdggs8mf8&list=PLguJavb1kM-Th9SCM_EzC3EGZgnrbuM23'
     };
 
     function youtubeEmbedUrl(link) {
@@ -391,14 +398,21 @@
       openCard(cardNumber); // Erst hier wird der YouTube-iframe geladen.
     }
 
-    for (let i = 1; i <= CARD_COUNT; i++) {
+    const cardNumbers = Object.keys(youtubeLinks)
+      .filter(number => typeof youtubeLinks[number] === 'string' && youtubeLinks[number].trim())
+      .map(Number)
+      .filter(Number.isInteger)
+      .sort((a, b) => a - b);
+    document.querySelector('.gallery').setAttribute('aria-label', `Die ${cardNumbers.length} Karten`);
+
+    for (const i of cardNumbers) {
       const card = document.createElement('article');
       card.className = 'card';
       const button = document.createElement('button');
       button.type = 'button';
-      button.setAttribute('aria-label', i >= 20 && i <= 28 ? `Karte ${i} öffnen (Spoiler)` : `Karte ${i} öffnen`);
+      button.setAttribute('aria-label', i >= 28 && i <= 36 ? `Karte ${i} öffnen (Spoiler)` : `Karte ${i} öffnen`);
       button.addEventListener('click', () => {
-        if (i >= 20 && i <= 28) showSpoilerDialog(i, button);
+        if (i >= 28 && i <= 36) showSpoilerDialog(i, button);
         else openCard(i);
       });
       const img = document.createElement('img');
@@ -415,7 +429,7 @@
         }
       };
       button.appendChild(img);
-      if (i >= 20 && i <= 28) {
+      if (i >= 28 && i <= 36) {
         const spoilerWarning = document.createElement('span');
         spoilerWarning.className = 'spoiler-warning';
         spoilerWarning.setAttribute('aria-hidden', 'true');
